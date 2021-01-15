@@ -1,3 +1,8 @@
+import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import App from './App';
+import React from "react";
+import userEvent from "@testing-library/user-event";
+
 async function fetchPost() {
   const result = await fetch("https://jsonplaceholder.typicode.com/todos", {
     method: "POST",
@@ -47,28 +52,18 @@ describe("<App /> tests", () => {
     userEvent.click(screen.getByTestId("checkbox-1"));
     expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
   });
+
+
   it("click Remove All button, should remove all todos", async () => {
     fetchPost();
     // fetchMock.once(mockToDos);
     
-    render(<App />);
+    const { container } = render(<App />);
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     userEvent.click(screen.getByText(/Remove All/i));
-
-    expect(screen.queryByText(/Do bio homework/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Do math homework/i)).not.toBeInTheDocument();
+    const foo = container.querySelectorAll('[class*="todoList"]');
+    expect(foo.length).toEqual(0);
   });
 
-  it("click Select All button, should select all todos", async () => {
-    fetchPost();
-    // fetchMock.once(mockToDos);
-    
-    render(<App />);
-
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-    userEvent.click(screen.getByText(/Select All/i));
-    expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
-    expect(screen.queryByText(/fugiat veniam minus/i)).toHaveClass("completed");
-  });
 });

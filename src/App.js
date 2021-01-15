@@ -88,6 +88,7 @@ function App() {
       <h1 className="header">My Todo List</h1>
       {loading ? "Loading..." : (
         <TodoList
+          className="todoList"
           todos={todos}
           removeHandler={removeTodo}
           updateTodo={updateTodo}
