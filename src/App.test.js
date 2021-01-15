@@ -1,32 +1,31 @@
-import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
-import App from './App';
-import React from "react";
-import userEvent from "@testing-library/user-event";
+async function fetchPost() {
+  const result = await fetch("https://jsonplaceholder.typicode.com/todos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json;charset=UTF-8" },
+    body: JSON.stringify({
+      userId: 3,
+      id: Math.floor(Math.random() * 100) + 1,
+      title: "Do math homework",
+      completed: false
+    }, 
+    {
+      userId: 4,
+      id: Math.floor(Math.random() * 100) + 1,
+      title: "Do bio homework",
+      completed: false
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+    });
+}
 
 describe("<App /> tests", () => {
-  it("renders <App />", async () => {
-    render(<App />);
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-  });
 
-  it("should add a todo item", async () => {
-    async function fetchPost() {
-      const result = await fetch("https://jsonplaceholder.typicode.com/todos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json;charset=UTF-8" },
-        body: JSON.stringify({
-          userId: 3,
-          id: Math.floor(Math.random() * 100) + 1,
-          title: "Do math homework",
-          completed: false
-        })
-      })
-        .then(res => res.json())
-        .then(data => {
-        });
-    }
-    
+  it("add new todo ", async () => {
     fetchPost();
+    // fetchMock.once(mockToDos);
+
     render(<App />);
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
     userEvent.type(screen.getByRole("textbox"), "Do math homework");
@@ -48,12 +47,28 @@ describe("<App /> tests", () => {
     userEvent.click(screen.getByTestId("checkbox-1"));
     expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
   });
-
-  it("remove all todos", async () => {
+  it("click Remove All button, should remove all todos", async () => {
+    fetchPost();
+    // fetchMock.once(mockToDos);
+    
     render(<App />);
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    expect(screen.getByText(/delectus aut autem/i)).not.toBeInTheDocument();
+    userEvent.click(screen.getByText(/Remove All/i));
+
+    expect(screen.queryByText(/Do bio homework/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Do math homework/i)).not.toBeInTheDocument();
   });
 
+  it("click Select All button, should select all todos", async () => {
+    fetchPost();
+    // fetchMock.once(mockToDos);
+    
+    render(<App />);
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    userEvent.click(screen.getByText(/Select All/i));
+    expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
+    expect(screen.queryByText(/fugiat veniam minus/i)).toHaveClass("completed");
+  });
 });
