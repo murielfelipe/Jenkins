@@ -48,4 +48,12 @@ describe("<App /> tests", () => {
     userEvent.click(screen.getByTestId("checkbox-1"));
     expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
   });
+
+  it("remove all todos", async () => {
+    render(<App />);
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    expect(screen.getByText(/delectus aut autem/i)).not.toBeInTheDocument();
+  });
+
 });
