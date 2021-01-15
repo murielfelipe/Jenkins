@@ -2,12 +2,24 @@ import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from "react";
 import TodoList from "./components/TodoList";
+import SelectItems from "./components/SelectItems";
+import RemoveAll from './components/RemoveAll';
 
 function App() {
+
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newTodo, setNewTodo] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      const result = await fetch("https://jsonplaceholder.typicode.com/todos").then(res => res.json());
+      setTodos(result.slice(0, 5));
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
   function onChange(ev) {
     const value = ev.target.value;
@@ -41,10 +53,18 @@ function App() {
 
   function updateTodo(_id) {
     const newList = todos.map(t => {
-      if(t.id === _id) {
+      if (t.id === _id) {
         const updatedItem = { ...t, completed: !t.completed };
         return updatedItem;
       }
+      return t;
+    });
+    setTodos(newList);
+  }
+
+  function selectAll() {
+    const newList = todos.map(t => {
+      t.completed=true;
       return t;
     });
     setTodos(newList);
@@ -59,6 +79,10 @@ function App() {
     fetchData();
   }, []);
 
+  function removeTodos() {
+    setTodos([]);
+  }
+
   return (
     <div className="App">
       <h1 className="header">My Todo List</h1>
@@ -67,6 +91,7 @@ function App() {
           todos={todos}
           removeHandler={removeTodo}
           updateTodo={updateTodo}
+          removeTodos={removeTodos}
         />
       )}
 
@@ -77,7 +102,10 @@ function App() {
             <button type="submit">Add New Todo</button>
           </form>
         )}
+        <SelectItems handleOnClickSelectAll={selectAll} />
+        <RemoveAll removeAllHandler={removeTodos} />
       </div>
+
     </div>
   );
 }
