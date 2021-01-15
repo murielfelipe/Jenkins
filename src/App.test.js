@@ -3,30 +3,34 @@ import App from './App';
 import React from "react";
 import userEvent from "@testing-library/user-event";
 
-describe("<App /> tests", () => {
-  it("renders <App />", async () => {
-    render(<App />);
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-  });
+async function fetchPost() {
+  const result = await fetch("https://jsonplaceholder.typicode.com/todos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json;charset=UTF-8" },
+    body: JSON.stringify({
+      userId: 3,
+      id: Math.floor(Math.random() * 100) + 1,
+      title: "Do math homework",
+      completed: false
+    }, 
+    {
+      userId: 4,
+      id: Math.floor(Math.random() * 100) + 1,
+      title: "Do bio homework",
+      completed: false
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+    });
+}
 
-  it("should add a todo item", async () => {
-    async function fetchPost() {
-      const result = await fetch("https://jsonplaceholder.typicode.com/todos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json;charset=UTF-8" },
-        body: JSON.stringify({
-          userId: 3,
-          id: Math.floor(Math.random() * 100) + 1,
-          title: "Do math homework",
-          completed: false
-        })
-      })
-        .then(res => res.json())
-        .then(data => {
-        });
-    }
-    
+describe("<App /> tests", () => {
+
+  it("add new todo ", async () => {
     fetchPost();
+    // fetchMock.once(mockToDos);
+
     render(<App />);
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
     userEvent.type(screen.getByRole("textbox"), "Do math homework");
@@ -49,6 +53,18 @@ describe("<App /> tests", () => {
     expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
   });
 
+  it("click Remove All button, should remove all todos", async () => {
+    fetchPost();
+    // fetchMock.once(mockToDos);
+    
+    const { container } = render(<App />);
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    userEvent.click(screen.getByText(/Remove All/i));
+    const foo = container.querySelectorAll('[class*="todoList"]');
+    expect(foo.length).toEqual(0);
+  });
+
   it("should select all items", async () => {
     const { container } = render(<App />)
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
@@ -57,11 +73,5 @@ describe("<App /> tests", () => {
     const foo = container.querySelectorAll('[class*="completed"]')
     expect(foo.length).toEqual(5);
   });
-  /*it("remove all todos", async () => {
-    render(<App />);
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-
-    expect(screen.getByText(/delectus aut autem/i)).not.toBeInTheDocument();
-  });*/
 
 });
