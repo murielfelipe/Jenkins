@@ -53,7 +53,6 @@ describe("<App /> tests", () => {
     expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
   });
 
-
   it("click Remove All button, should remove all todos", async () => {
     fetchPost();
     // fetchMock.once(mockToDos);
@@ -64,6 +63,15 @@ describe("<App /> tests", () => {
     userEvent.click(screen.getByText(/Remove All/i));
     const foo = container.querySelectorAll('[class*="todoList"]');
     expect(foo.length).toEqual(0);
+  });
+
+  it("should select all items", async () => {
+    const { container } = render(<App />)
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    await screen.findByText('delectus aut autem')
+    userEvent.click(screen.getByTestId("btn-select-all"));
+    const foo = container.querySelectorAll('[class*="completed"]')
+    expect(foo.length).toEqual(5);
   });
 
 });
