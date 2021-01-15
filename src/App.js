@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from "react";
 import TodoList from "./components/TodoList";
+import SelectItems from "./components/SelectItems";
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -50,6 +51,14 @@ function App() {
     setTodos(newList);
   }
 
+  function selectAll() {
+    const newList = todos.map(t => {
+      t.completed=true;
+      return t;
+    });
+    setTodos(newList);
+  }
+
   useEffect(() => {
     async function fetchData() {
       const result = await fetch("https://jsonplaceholder.typicode.com/todos").then(res => res.json());
@@ -77,6 +86,7 @@ function App() {
             <button type="submit">Add New Todo</button>
           </form>
         )}
+        <SelectItems handleOnClickSelectAll={selectAll} />
       </div>
     </div>
   );
