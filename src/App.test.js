@@ -49,6 +49,14 @@ describe("<App /> tests", () => {
     expect(screen.getByText(/delectus aut autem/i)).toHaveClass("completed");
   });
 
+  it("should select all items", async () => {
+    const { container } = render(<App />)
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    await screen.findByText('delectus aut autem')
+    userEvent.click(screen.getByTestId("btn-select-all"));
+    const foo = container.querySelectorAll('[class*="completed"]')
+    expect(foo.length).toEqual(5);
+  });
   /*it("remove all todos", async () => {
     render(<App />);
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));

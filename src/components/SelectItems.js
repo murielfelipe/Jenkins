@@ -8,7 +8,7 @@ class SelectItems extends React.Component {
     render(){
         return(
             <div>
-                <button type="button" onClick={this.props.handleOnClickSelectAll}>Select All</button>
+                <button  data-testid={"btn-select-all"} type="button" onClick={this.props.handleOnClickSelectAll}>Select All</button>
             </div>
         );
     }
